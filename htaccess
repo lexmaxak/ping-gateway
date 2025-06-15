@@ -1,0 +1,21 @@
+# Включаем механизм перезаписи
+RewriteEngine On
+
+# Перенаправление для /check с UUID
+RewriteRule ^check/([0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12})$ test/index.php?action=check&uuid=$1 [L,QSA]
+
+# Перенаправление для /ping с UUID
+RewriteRule ^ping/([0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12})$ test/index.php?action=ping&uuid=$1 [L,QSA]
+
+# Перенаправление для корневых /check и /ping (без UUID)
+RewriteRule ^check$ test/index.php?action=check [L,QSA]
+RewriteRule ^ping$ test/index.php?action=ping [L,QSA]
+
+# Запрещаем прямой доступ к index.php
+RewriteCond %{THE_REQUEST} ^[A-Z]{3,9}\ /test/index\.php
+RewriteRule ^test/index\.php(.*)$ /test$1 [R=301,L]
+
+# Обработка всех остальных запросов
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteCond %{REQUEST_FILENAME} !-d
+RewriteRule ^(.*)$ test/index.php?url=$1 [QSA,L]
